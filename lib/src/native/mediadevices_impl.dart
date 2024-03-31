@@ -78,7 +78,8 @@ class MediaDeviceNative extends MediaDevices {
       );
 
       List<dynamic> sources = response['sources'];
-
+      print('sources');
+      print(response);
       return sources;
     } on PlatformException catch (e) {
       throw 'Unable to getSources: ${e.message}';
@@ -94,7 +95,8 @@ class MediaDeviceNative extends MediaDevices {
               deviceId: e['deviceId'],
               groupId: e['groupId'],
               kind: e['kind'],
-              label: e['label']),
+              label: e['label'],
+              isActive: e['isActive'] ?? ''),
         )
         .toList();
   }

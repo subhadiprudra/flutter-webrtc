@@ -32,6 +32,7 @@ import com.cloudwebrtc.webrtc.utils.ObjectType;
 import com.cloudwebrtc.webrtc.utils.PermissionUtils;
 import com.cloudwebrtc.webrtc.utils.Utils;
 import com.twilio.audioswitch.AudioDevice;
+import com.twilio.audioswitch.AudioSwitch;
 
 import org.webrtc.AudioTrack;
 import org.webrtc.CryptoOptions;
@@ -906,6 +907,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
         }
         break;
       }
+      
       default:
         if(frameCryptor.handleMethodCall(call, result)) {
           break;
@@ -914,6 +916,8 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
         break;
     }
   }
+
+  
 
   private ConstraintsMap capabilitiestoMap(RtpCapabilities capabilities) {
     ConstraintsMap capabilitiesMap = new ConstraintsMap();
@@ -1388,6 +1392,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
     String streamId = getNextStreamUUID();
     MediaStream mediaStream = mFactory.createLocalMediaStream(streamId);
 
+    
     if (mediaStream == null) {
       // XXX The following does not follow the getUserMedia() algorithm
       // specified by
@@ -1400,9 +1405,13 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
     getUserMediaImpl.getDisplayMedia(constraints, result, mediaStream);
   }
 
+  
+
   public void getSources(Result result) {
     ConstraintsArray array = new ConstraintsArray();
     String[] names = new String[Camera.getNumberOfCameras()];
+
+    String cureentDevice = AudioSwitchManager.instance.getActiveDevice();
 
     for (int i = 0; i < Camera.getNumberOfCameras(); ++i) {
       ConstraintsMap info = getCameraInfo(i);
@@ -1421,7 +1430,10 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
     } else {
       android.media.AudioManager audioManager = ((android.media.AudioManager) context
               .getSystemService(Context.AUDIO_SERVICE));
+            
+
       final AudioDeviceInfo[] devices = audioManager.getDevices(android.media.AudioManager.GET_DEVICES_INPUTS);
+      
       for (int i = 0; i < devices.length; i++) {
         AudioDeviceInfo device = devices[i];
         if (device.getType() == AudioDeviceInfo.TYPE_BUILTIN_MIC || device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
@@ -1429,7 +1441,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
           int type = (device.getType() & 0xFF);
           String label = device.getProductName().toString();
           String address = Build.VERSION.SDK_INT < Build.VERSION_CODES.P ? String.valueOf(i) : device.getAddress();
-
+          
           if (device.getType() == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
               label = "Built-in Microphone (" + address +  ")";
           }
@@ -1441,7 +1453,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
           if(device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
             label = "Bluetooth SCO (" + device.getProductName().toString() +  ")";
           }
-
+         
           ConstraintsMap audio = new ConstraintsMap();
           audio.putString("label", label);
           audio.putString("deviceId", String.valueOf(i));
@@ -1457,10 +1469,16 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
 
     for (AudioDevice audioOutput : audioOutputs) {
       ConstraintsMap audioOutputMap = new ConstraintsMap();
+      boolean isActive = false;
+      if(audioOutput.getName().equalsIgnoreCase(cureentDevice)){
+        isActive = true;
+      }
       audioOutputMap.putString("label", audioOutput.getName());
       audioOutputMap.putString("deviceId", AudioDeviceKind.fromAudioDevice(audioOutput).typeName);
       audioOutputMap.putString("facing", "");
       audioOutputMap.putString("kind", "audiooutput");
+      audioOutputMap.putString("isActive", isActive+"");
+      
       array.pushMap(audioOutputMap);
     }
 

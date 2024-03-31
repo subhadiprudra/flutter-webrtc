@@ -55,12 +55,12 @@ public class FlutterWebRTCPlugin implements FlutterPlugin, ActivityAware, EventC
             plugin.methodCallHandler.setActivity((Activity) registrar.activeContext());
         }
         application = ((Application) registrar.context().getApplicationContext());
-        application.registerActivityLifecycleCallbacks(plugin.observer);
+        // application.registerActivityLifecycleCallbacks(plugin.observer);
 
-        registrar.addViewDestroyListener(view -> {
-            plugin.stopListening();
-            return false;
-        });
+        // registrar.addViewDestroyListener(view -> {
+        //     plugin.stopListening();
+        //     return false;
+        // });
     }
 
     @Override
@@ -71,7 +71,9 @@ public class FlutterWebRTCPlugin implements FlutterPlugin, ActivityAware, EventC
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-        stopListening();
+       // stopListening();
+       Log.w(TAG, "close app ");
+
     }
 
     @Override
@@ -84,24 +86,24 @@ public class FlutterWebRTCPlugin implements FlutterPlugin, ActivityAware, EventC
 
     @Override
     public void onDetachedFromActivityForConfigChanges() {
-        methodCallHandler.setActivity(null);
+       // methodCallHandler.setActivity(null);
     }
 
     @Override
     public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
-        methodCallHandler.setActivity(binding.getActivity());
+       // methodCallHandler.setActivity(binding.getActivity());
     }
 
     @Override
     public void onDetachedFromActivity() {
-        methodCallHandler.setActivity(null);
-        if (this.observer != null) {
-            this.lifecycle.removeObserver(this.observer);
-            if (application!=null) {
-                application.unregisterActivityLifecycleCallbacks(this.observer);
-            }
-        }
-        this.lifecycle = null;
+//        methodCallHandler.setActivity(null);
+//        if (this.observer != null) {
+//            this.lifecycle.removeObserver(this.observer);
+//            if (application!=null) {
+//                application.unregisterActivityLifecycleCallbacks(this.observer);
+//            }
+//        }
+//        this.lifecycle = null;
     }
 
     private void startListening(final Context context, BinaryMessenger messenger,
@@ -162,14 +164,14 @@ public class FlutterWebRTCPlugin implements FlutterPlugin, ActivityAware, EventC
         @Override
         public void onActivityResumed(Activity activity) {
             if (null != methodCallHandler) {
-                methodCallHandler.reStartCamera();
+               // methodCallHandler.reStartCamera();
             }
         }
 
         @Override
         public void onResume(LifecycleOwner owner) {
             if (null != methodCallHandler) {
-                methodCallHandler.reStartCamera();
+              //  methodCallHandler.reStartCamera();
             }
         }
 

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
+import android.util.Log;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
@@ -165,6 +165,13 @@ public class AudioSwitchManager {
                 }
             });
         }
+    }
+
+    public String getActiveDevice(){
+        AudioDevice audioDevice =audioSwitch.getSelectedAudioDevice();
+        String name = audioDevice.getName();
+        Log.i("audioDevice...........",name);
+        return name;
     }
 
     public void stop() {
